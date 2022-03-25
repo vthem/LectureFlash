@@ -8,15 +8,6 @@
                 "mot2",
                 "mot3"
             ]
-        },
-		{
-            "displayDuration": 1.0,
-            "name": "Example2",
-            "words": [
-                "mot 1",
-                "mot 2",
-                "mot 3"
-            ]
         }
     ]
 }
