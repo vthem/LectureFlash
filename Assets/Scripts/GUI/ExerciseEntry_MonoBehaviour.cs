@@ -13,7 +13,7 @@ public class ExerciseEntry_MonoBehaviour : MonoBehaviour, IPointerClickHandler
 
 	public void OnPointerClick(PointerEventData eventData)
 	{
-		new AppDataCommand_SelectExercise(text.text);
+		new RuntimeAppData.Command_SelectExercise(text.text);
 	}
 
 	public void SetExerciseName(string name)

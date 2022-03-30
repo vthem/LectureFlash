@@ -5,6 +5,8 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
+using static RuntimeAppData;
+
 [Serializable]
 public class Exercise
 {
@@ -19,8 +21,10 @@ public class AppData
 	public Exercise[] exercises;
 }
 
-public class RuntimeAppData
+public partial class RuntimeAppData
 {
+	private Queue<Command> appDataCommandQueue = new Queue<Command>();
+
 	public bool isDataDirty = false;
 	public bool isDirty = false;
 	public string SelectedExerciseName { get; private set; } = null;
@@ -66,68 +70,105 @@ public class RuntimeAppData
 	public void HandleCommandQueue()
 	{
 		isDirty = false;
-		while (GlobalData.appDataCommandQueue.Count > 0)
+		while (appDataCommandQueue.Count > 0)
 		{
-			var command = GlobalData.appDataCommandQueue.Dequeue();
-			switch (command.Name)
-			{
-				case AppDataCommandName.AddExercise:
-					break;
-				case AppDataCommandName.SelectExercise:
-					SelectedExerciseName = (command as AppDataCommand_SelectExercise).SelectedExerciseName;
-					isDirty = true;
-					break;
-				case AppDataCommandName.RemoveExercise:
-					break;
-				case AppDataCommandName.RenameExercise:
-					break;
-				case AppDataCommandName.AddWord:
-					break;
-				case AppDataCommandName.RemoveWord:
-					break;
-				case AppDataCommandName.UpdateWord:
-					break;
-			}
+			var command = appDataCommandQueue.Dequeue();
+			command.Exec();
 		}
 	}
 }
 
-public enum AppDataCommandName
+public partial class RuntimeAppData
 {
-	AddExercise,
-	SelectExercise,
-	RemoveExercise,
-	RenameExercise,
-	AddWord,
-	RemoveWord,
-	UpdateWord
-}
-
-public class AppDataCommand
-{
-	public AppDataCommandName Name { get; protected set; }
-
-	public AppDataCommand(AppDataCommandName name)
+	public abstract class Command
 	{
-		Name = name;
-		GlobalData.appDataCommandQueue.Enqueue(this);
-	}
-}
+		protected RuntimeAppData runtimeAppData;
+		protected AppData appData;
 
-public class AppDataCommand_SelectExercise : AppDataCommand
-{
-	public AppDataCommand_SelectExercise(string exerciseName) : base(AppDataCommandName.SelectExercise)
-	{
-		SelectedExerciseName = exerciseName;
+		public Command()
+		{
+			runtimeAppData = GlobalData.runtimeAppData;
+			appData = runtimeAppData.appData;
+			runtimeAppData.appDataCommandQueue.Enqueue(this);
+		}
+
+		public abstract void Exec();
 	}
 
-	public string SelectedExerciseName { get; private set; }
+	public class Command_SelectExercise : Command
+	{
+		public Command_SelectExercise(string exerciseName) : base()
+		{
+			ExerciseName = exerciseName;
+		}
+
+		public string ExerciseName { get; private set; }
+
+		public override void Exec()
+{
+			runtimeAppData.SelectedExerciseName = ExerciseName;
+			runtimeAppData.isDirty = true;
+		}
+	}
+
+	public class Command_AddExercise : Command
+	{
+		public override void Exec()
+		{
+			string newExerciceName = "Nouvel Exercice";
+			if (appData.exercises[appData.exercises.Length - 1].name == newExerciceName)
+				return;
+			var ex = new Exercise();
+			ex.name = newExerciceName;
+			ex.words = new string[0];
+			ex.displayDuration = 1.0f;
+			List<Exercise> l = new List<Exercise>(appData.exercises);
+			l.Add(ex);
+			appData.exercises = l.ToArray();
+			runtimeAppData.isDirty = runtimeAppData.isDataDirty = true;
+		}
+	}
+
+	public class Command_RemoveSelectedExercise : Command
+	{
+		public override void Exec()
+		{
+			List<Exercise> l = new List<Exercise>(appData.exercises);
+			int idx = l.FindIndex(_ex => _ex.name == runtimeAppData.SelectedExerciseName);
+			if (idx < 0)
+				return;
+			l.RemoveAt(idx);
+			appData.exercises = l.ToArray();
+			runtimeAppData.isDirty = runtimeAppData.isDataDirty = true;
+		}
+	}
+
+	public class Command_RenameSelectedExercise : Command
+	{
+		private readonly string newName;
+		public Command_RenameSelectedExercise(string newName)
+		{
+			this.newName = newName;
+		}
+
+		public override void Exec()
+		{
+			for (int i = 0; i < appData.exercises.Length; ++i)
+			{
+				if (appData.exercises[i].name == runtimeAppData.SelectedExerciseName)
+				{
+					appData.exercises[i].name = newName;
+					break;
+				}
+			}
+			runtimeAppData.isDirty = runtimeAppData.isDataDirty = true;
+		}
+	}
 }
 
 public static class GlobalData
 {
 	public static RuntimeAppData runtimeAppData;
-	public static Queue<AppDataCommand> appDataCommandQueue = new Queue<AppDataCommand>();
 }
 
 public class Main_Monobehaviour : MonoBehaviour
