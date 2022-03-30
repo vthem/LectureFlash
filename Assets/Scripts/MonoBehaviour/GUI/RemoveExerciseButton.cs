@@ -1,7 +1,10 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class AddExerciseButton_MonoBehaviour : MonoBehaviour
+public class RemoveExerciseButton : MonoBehaviour
 {
 	private Button button;
 
@@ -13,6 +16,6 @@ public class AddExerciseButton_MonoBehaviour : MonoBehaviour
 
 	private void ClickHandler()
 	{
-		new RuntimeAppData.Command_AddExercise();
+		new RuntimeAppData.Command_RemoveSelectedExercise();
 	}
 }

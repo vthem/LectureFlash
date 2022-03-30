@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ExerciseList_MonoBehaviour : MonoBehaviour
+public class ExerciseList : MonoBehaviour
 {
     public GameObject template;
 
@@ -24,7 +24,7 @@ public class ExerciseList_MonoBehaviour : MonoBehaviour
                 var obj = Instantiate(template);
                 obj.transform.SetParent(transform);
                 obj.transform.localScale = Vector3.one;
-                obj.GetComponent<ExerciseEntry_MonoBehaviour>().SetExerciseName(exerciseNameArray[i]);
+                obj.GetComponent<ExerciseEntry>().SetExerciseName(exerciseNameArray[i]);
                 exerciseObjectList.Add(obj);
 
             }

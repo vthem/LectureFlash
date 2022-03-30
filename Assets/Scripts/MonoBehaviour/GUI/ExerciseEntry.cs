@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ExerciseEntry_MonoBehaviour : MonoBehaviour, IPointerClickHandler
+public class ExerciseEntry : MonoBehaviour, IPointerClickHandler
 {
     public Text text;
 	public Color selectedColor;
