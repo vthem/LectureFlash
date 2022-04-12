@@ -29,6 +29,7 @@ public partial class RuntimeAppData
 		public override void Exec()
 		{
 			runtimeAppData.SelectedExerciseName = ExerciseName;
+			runtimeAppData.SelectedWordName = null;
 			runtimeAppData.isDirty = true;
 		}
 	}
@@ -75,14 +76,78 @@ public partial class RuntimeAppData
 
 		public override void Exec()
 		{
-			for (int i = 0; i < appData.exercises.Length; ++i)
+			if (runtimeAppData.TryFindSelectedExerciseIndex(out int i))
 			{
-				if (appData.exercises[i].name == runtimeAppData.SelectedExerciseName)
-				{
-					appData.exercises[i].name = newName;
-					break;
-				}
+				appData.exercises[i].name = newName;
 			}
+			runtimeAppData.isDirty = runtimeAppData.isDataDirty = true;
+		}
+	}
+
+	public class Command_AddWord : Command
+	{
+		public override void Exec()
+		{
+			if (!runtimeAppData.TryFindSelectedExerciseIndex(out int i))
+			{
+				return;
+			}
+			string newWordName = "Nouveau Mot";
+			List<string> l = new List<string>(appData.exercises[i].words);
+			l.Add(newWordName);
+			appData.exercises[i].words = l.ToArray();
+			runtimeAppData.isDirty = runtimeAppData.isDataDirty = true;
+		}
+	}
+
+	public class Command_SelectWord: Command
+	{
+		public Command_SelectWord(string wordName) : base()
+		{
+			WordName = wordName;
+		}
+
+		public string WordName { get; private set; }
+
+		public override void Exec()
+		{
+			runtimeAppData.SelectedWordName = WordName;
+			runtimeAppData.isDirty = true;
+		}
+	}
+
+	public class Command_RemoveSelectedWord: Command
+	{
+		public override void Exec()
+		{
+			if (!runtimeAppData.TryFindSelectedWordIndex(out int wordIndex, out int exerciseIndex))
+			{
+				return;
+			}
+			List<string> l = new List<string>(appData.exercises[exerciseIndex].words);
+			l.RemoveAt(wordIndex);
+			appData.exercises[exerciseIndex].words = l.ToArray();
+			runtimeAppData.isDirty = runtimeAppData.isDataDirty = true;
+		}
+	}
+
+	public class Command_UpdateWord : Command
+	{
+		private readonly string newWord;
+
+		public Command_UpdateWord(string newWord) : base()
+		{
+			this.newWord = newWord;
+		}
+
+		public override void Exec()
+		{
+			if (!runtimeAppData.TryFindSelectedWordIndex(out int wordIndex, out int exerciseIndex))
+			{
+				return;
+			}
+			UnityEngine.Debug.Log($"Command_UpdateWord > {appData.exercises[exerciseIndex].words[wordIndex]} -> {newWord}");
+			appData.exercises[exerciseIndex].words[wordIndex] = newWord;
 			runtimeAppData.isDirty = runtimeAppData.isDataDirty = true;
 		}
 	}
