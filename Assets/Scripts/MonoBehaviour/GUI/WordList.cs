@@ -1,41 +1,13 @@
-using System.Collections.Generic;
 
-using UnityEngine;
-using UnityEngine.UI;
-
-public class WordList : MonoBehaviour
+public class WordList : AbstractList
 {
-	public GameObject template;
-
-	private readonly List<GameObject> wordObjectList = new List<GameObject>();
-
-	private void Update()
+	protected override string[] GetEntries()
 	{
-		if (GlobalData.runtimeAppData.isDirty)
-		{
-			foreach (GameObject wordObject in wordObjectList)
-			{
-				GameObject.Destroy(wordObject);
-			}
-			wordObjectList.Clear();
-
-			if (!string.IsNullOrEmpty(GlobalData.runtimeAppData.SelectedExerciseName))
-			{
-				PopulateList();
-			}
-		}
+		return GlobalData.runtimeAppData.WordArray(GlobalData.runtimeAppData.SelectedExerciseName);
 	}
 
-	private void PopulateList()
+	protected override bool ShouldUpdate()
 	{
-		string[] wordArray = GlobalData.runtimeAppData.WordArray(GlobalData.runtimeAppData.SelectedExerciseName);
-		for (int i = 0; i < wordArray.Length; ++i)
-		{
-			GameObject obj = Instantiate(template);
-			obj.transform.SetParent(transform);
-			obj.transform.localScale = Vector3.one;
-			obj.GetComponent<Text>().text = wordArray[i];
-			wordObjectList.Add(obj);
-		}
+		return GlobalData.runtimeAppData.isDirty;
 	}
 }

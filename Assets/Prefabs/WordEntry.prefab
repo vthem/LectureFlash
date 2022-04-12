@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4075877372871108701}
   - component: {fileID: 8744324967648161262}
   m_Layer: 5
-  m_Name: WordEntry_Template
+  m_Name: WordEntry
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

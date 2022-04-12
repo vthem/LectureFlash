@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4075877372871108701}
   - component: {fileID: 4075877372871108703}
   m_Layer: 5
-  m_Name: ExerciseEntry_Template
+  m_Name: ExerciseEntry
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
